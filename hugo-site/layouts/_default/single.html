@@ -1,120 +1,51 @@
 {{ define "main" }}
-{{ $currentPage := . }}
-{{ $related := first 4 (where (where .Site.RegularPages "Section" "posts") "Permalink" "!=" .Permalink) }}
-
-<!-- ===== BREADCRUMB ===== -->
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
-    <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
-        <a href="{{ "/" | relURL }}" class="hover:text-purple-600">হোম</a>
-        <span>/</span>
+<article class="single-page container">
+    <div class="breadcrumb">
+        <a href="{{ "/" | relURL }}">🏠 হোম</a>
+        <span class="sep">›</span>
         {{ range .Params.categories }}
-        <a href="{{ printf "/categories/%s/" . | relURL }}" class="hover:text-purple-600">{{ . | humanize }}</a>
-        <span>/</span>
+        <a href="{{ printf "/categories/%s/" . | relURL }}">{{ . | humanize }}</a>
+        <span class="sep">›</span>
         {{ end }}
-        <span class="text-gray-800 font-medium truncate">{{ .Title }}</span>
-    </nav>
-</div>
+        <span>{{ .Title }}</span>
+    </div>
 
-<!-- ===== POST CONTENT ===== -->
-<article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <!-- Header -->
-        <div class="p-6 md:p-10">
-            <!-- Category -->
-            <div class="flex flex-wrap gap-2 mb-4">
-                {{ range .Params.categories }}
-                <a href="{{ printf "/categories/%s/" . | relURL }}" class="text-xs font-medium px-3 py-1.5 rounded-full 
-                    {{ if eq . "job-circular" }}bg-purple-100 text-purple-700{{ else if eq . "tender-notice" }}bg-green-100 text-green-700{{ else if eq . "admission" }}bg-blue-100 text-blue-700{{ else if eq . "public-notice" }}bg-orange-100 text-orange-700{{ else }}bg-gray-100 text-gray-700{{ end }}">
-                    {{ . | humanize }}
-                </a>
-                {{ end }}
-                {{ range .Params.tags }}
-                <span class="text-xs px-3 py-1.5 rounded-full bg-gray-100 text-gray-600">#{{ . }}</span>
-                {{ end }}
-            </div>
-
-            <!-- Title -->
-            <h1 class="text-2xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">{{ .Title }}</h1>
-
-            <!-- Meta -->
-            <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6 pb-6 border-b border-gray-100">
-                <span>📅 {{ .PublishDate.Format "02 January 2006" }}</span>
-                <span>⏱ {{ .ReadingTime }} মিনিট পড়া</span>
-                {{ with .Params.author }}<span>✍️ {{ . }}</span>{{ end }}
-            </div>
-
-            <!-- Featured Image -->
-            {{ with .Params.image }}
-            <div class="mb-8 -mx-6 md:-mx-10">
-                <img src="{{ . | absURL }}" alt="{{ $.Title }}" class="w-full h-64 md:h-96 object-cover" loading="lazy">
-            </div>
+    <div class="post-header">
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+            {{ range .Params.categories }}
+            <span class="post-badge 
+                {{ if eq . "job-circular" }}badge-job{{ else if eq . "tender-notice" }}badge-tender{{ else if eq . "admission" }}badge-admission{{ else if eq . "public-notice" }}badge-notice{{ else }}badge-other{{ end }}">
+                {{ if eq . "job-circular" }}💼{{ else if eq . "tender-notice" }}📄{{ else if eq . "admission" }}🎓{{ else if eq . "public-notice" }}📢{{ else }}📌{{ end }}
+                {{ . | humanize }}
+            </span>
             {{ end }}
-
-            <!-- Content -->
-            <div class="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-purple-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl bangla-content">
-                {{ .Content }}
-            </div>
-
-            <!-- Share Buttons -->
-            <div class="mt-8 pt-6 border-t border-gray-100">
-                <div class="flex flex-wrap items-center gap-3">
-                    <span class="text-sm font-medium text-gray-700">শেয়ার করুন:</span>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ .Permalink }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition">Facebook</a>
-                    <a href="https://twitter.com/intent/tweet?text={{ .Title }}&url={{ .Permalink }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition">Twitter</a>
-                    <a href="https://wa.me/?text={{ .Title }} {{ .Permalink }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition">WhatsApp</a>
-                    <button onclick="navigator.clipboard.writeText('{{ .Permalink }}').then(()=>alert('লিংক কপি করা হয়েছে!'))" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition">📋 কপি</button>
-                </div>
-            </div>
+        </div>
+        <h1>{{ .Title }}</h1>
+        <div class="post-meta-bar">
+            <span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                প্রকাশিত: {{ .PublishDate.Format "January 2, 2006" }}
+            </span>
+            <span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                পড়তে সময়: {{ .ReadingTime }} মিনিট
+            </span>
         </div>
     </div>
-</article>
 
-<!-- ===== RELATED POSTS ===== -->
-{{ if $related }}
-<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <h2 class="text-2xl font-bold text-gray-900 mb-8">📌 সম্পর্কিত পোস্ট</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {{ range $related }}
-        <article class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group">
-            <div class="p-5">
-                <div class="flex items-center gap-2 mb-2">
-                    {{ range .Params.categories }}
-                    <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">{{ . | humanize }}</span>
-                    {{ end }}
-                </div>
-                <h3 class="font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition line-clamp-2 text-sm">
-                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                </h3>
-                <div class="text-xs text-gray-400">{{ .PublishDate.Format "02 Jan 2006" }}</div>
-            </div>
-        </article>
-        {{ end }}
+    <div class="post-content bangla-content">
+        {{ .Content }}
     </div>
-</section>
-{{ end }}
 
-<!-- ===== SCHEMA.ORG ARTICLE ===== -->
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "NewsArticle",
-    "headline": "{{ .Title }}",
-    "description": "{{ .Summary | plainify | truncate 200 }}",
-    "datePublished": "{{ .PublishDate.Format "2006-01-02T15:04:05Z07:00" }}",
-    "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}",
-    "author": {
-        "@type": "Organization",
-        "name": "{{ .Site.Params.author }}"
-    },
-    "publisher": {
-        "@type": "Organization",
-        "name": "{{ .Site.Params.publisher }}"
-    },
-    "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "{{ .Permalink }}"
-    },
-    "url": "{{ .Permalink }}"
-}
-</script>
+    <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--gray-200);">
+        <a href="javascript:history.back()" class="back-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            পেছনে যান
+        </a>
+        <a href="{{ "/" | relURL }}" class="back-btn" style="margin-right: 0.5rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            হোম পেজ
+        </a>
+    </div>
+</article>
 {{ end }}

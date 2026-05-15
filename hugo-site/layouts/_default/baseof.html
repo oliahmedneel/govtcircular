@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ .Site.LanguageCode }}" dir="ltr">
+<html lang="{{ .Site.Language.Lang  }}" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -49,6 +49,11 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="{{ "css/style.css" | relURL }}">
+    
+    <!-- Structured Data: Organization -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
         "@type": "Organization",
         "name": "{{ .Site.Title }}",
         "url": "{{ .Site.BaseURL }}",
@@ -90,91 +95,110 @@
     
     {{ block "extra_head" . }}{{ end }}
 </head>
-<body class="bg-gray-50 font-sans antialiased">
-    <!-- ===== HEADER / NAVIGATION ===== -->
-    <header class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo -->
-                <a href="{{ "/" | relURL }}" class="flex items-center space-x-2 space-x-reverse rtl-space-x-reverse">
-                    <span class="w-9 h-9 bg-gradient-to-br from-purple-600 to-blue-500 rounded-lg flex items-center justify-center text-white text-lg font-bold">JS</span>
-                    <span class="text-lg font-bold text-gray-900 hidden sm:block">{{ .Site.Title }}</span>
-                </a>
+<body>
 
-                <!-- Desktop Nav -->
-                <nav class="hidden md:flex items-center space-x-1 space-x-reverse">
+    <!-- ===== TOP BAR ===== -->
+    <div class="top-bar">
+        <div class="container">
+            <div class="top-bar-left">
+                <span>
+                    <svg class="date-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    {{ now.Format "Monday, 2 January 2006" }}
+                </span>
+                <span>বাংলাদেশ সরকারি চাকরি ও নিয়োগ বিজ্ঞপ্তি</span>
+            </div>
+            <div class="top-bar-right">
+                <a href="{{ "/index.xml" | absURL }}" target="_blank">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
+                    RSS
+                </a>
+                <a href="{{ "/sitemap.xml" | absURL }}" target="_blank">সাইটম্যাপ</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== HEADER / NAVIGATION ===== -->
+    <header class="header">
+        <div class="container">
+            <div class="header-inner">
+                <a href="{{ "/" | relURL }}" class="logo">
+                    <span class="logo-icon">JS</span>
+                    <div>
+                        <span class="logo-text">{{ .Site.Title }}</span>
+                        <span class="logo-sub">সরকারি চাকরি ও নিয়োগ পোর্টাল</span>
+                    </div>
+                </a>
+                <nav class="nav-desktop">
                     {{ range .Site.Menus.main }}
-                    <a href="{{ .URL | relURL }}" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-purple-50 hover:text-purple-700 {{ if $.HasMenuCurrent "main" . }}text-purple-700 bg-purple-50{{ else }}text-gray-600{{ end }}">
+                    <a href="{{ .URL | relURL }}" class="{{ if $.HasMenuCurrent "main" . }}active{{ end }}">
                         {{ .Name }}
                     </a>
                     {{ end }}
                 </nav>
-
-                <!-- Mobile Toggle -->
-                <button id="menuToggle" class="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100" aria-label="মেনু">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                <button id="menuToggle" class="menu-toggle" aria-label="মেনু">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
             </div>
         </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobileMenu" class="md:hidden hidden border-t border-gray-100 bg-white">
-            <div class="px-4 py-3 space-y-1">
-                {{ range .Site.Menus.main }}
-                <a href="{{ .URL | relURL }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700">{{ .Name }}</a>
-                {{ end }}
-            </div>
+        <div id="mobileMenu" class="mobile-nav">
+            {{ range .Site.Menus.main }}
+            <a href="{{ .URL | relURL }}">{{ .Name }}</a>
+            {{ end }}
         </div>
     </header>
 
-    <!-- ===== MAIN CONTENT ===== -->
-    <main class="min-h-screen">
+    <main>
         {{ block "main" . }}{{ end }}
     </main>
 
-    <!-- ===== FOOTER ===== -->
-    <footer class="bg-gray-900 text-gray-300 mt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- About -->
-                <div>
-                    <h3 class="text-white text-lg font-bold mb-4">{{ .Site.Title }}</h3>
-                    <p class="text-sm leading-relaxed">{{ .Site.Params.description }}</p>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                        {{ .Site.Title }}
+                    </h3>
+                    <p>{{ .Site.Params.description }}</p>
                 </div>
-                <!-- Quick Links -->
-                <div>
-                    <h3 class="text-white text-lg font-bold mb-4">দ্রুত লিংক</h3>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="{{ "/" | relURL }}" class="hover:text-white transition-colors">হোম</a></li>
-                        <li><a href="{{ "/categories/job-circular/" | relURL }}" class="hover:text-white transition-colors">চাকরির বিজ্ঞপ্তি</a></li>
-                        <li><a href="{{ "/categories/tender-notice/" | relURL }}" class="hover:text-white transition-colors">দরপত্র</a></li>
-                        <li><a href="{{ "/categories/admission/" | relURL }}" class="hover:text-white transition-colors">ভর্তি</a></li>
-                        <li><a href="{{ "/categories/public-notice/" | relURL }}" class="hover:text-white transition-colors">সরকারি বিজ্ঞপ্তি</a></li>
+                <div class="footer-col">
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                        দ্রুত লিংক
+                    </h3>
+                    <ul>
+                        <li><a href="{{ "/" | relURL }}">🏠 হোম</a></li>
+                        <li><a href="{{ "/categories/job-circular/" | relURL }}">💼 চাকরির বিজ্ঞপ্তি</a></li>
+                        <li><a href="{{ "/categories/tender-notice/" | relURL }}">📄 দরপত্র</a></li>
+                        <li><a href="{{ "/categories/admission/" | relURL }}">🎓 ভর্তি</a></li>
+                        <li><a href="{{ "/categories/public-notice/" | relURL }}">📢 সরকারি বিজ্ঞপ্তি</a></li>
+                        <li><a href="{{ "/categories/unknown/" | relURL }}">ℹ️ অন্যান্য</a></li>
                     </ul>
                 </div>
-                <!-- Info -->
-                <div>
-                    <h3 class="text-white text-lg font-bold mb-4">তথ্য</h3>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="{{ "/sitemap.xml" | absURL }}" class="hover:text-white transition-colors">সাইটম্যাপ</a></li>
-                        <li><a href="{{ "/index.xml" | absURL }}" class="hover:text-white transition-colors">RSS ফিড</a></li>
-                        <li>সর্বশেষ আপডেট: {{ now.Format "January 2, 2006" }}</li>
+                <div class="footer-col">
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        তথ্য
+                    </h3>
+                    <ul>
+                        <li><a href="{{ "/sitemap.xml" | absURL }}" target="_blank">📍 সাইটম্যাপ</a></li>
+                        <li><a href="{{ "/index.xml" | absURL }}" target="_blank">📡 RSS ফিড</a></li>
+                        <li style="color: var(--gray-400); font-size: 0.85rem;">🔄 সর্বশেষ আপডেট: {{ now.Format "January 2, 2006" }}</li>
+                        <li style="color: var(--gray-400); font-size: 0.85rem;">📧 যোগাযোগ: info@jobs.bd</li>
                     </ul>
                 </div>
             </div>
-            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+            <div class="footer-bottom">
                 <p>{{ .Site.Params.copyright }}</p>
-                <p class="mt-1">পাওয়ার্ড বাই <a href="https://gohugo.io" class="text-purple-400 hover:text-purple-300" target="_blank">Hugo</a> & <a href="https://pages.github.com" class="text-purple-400 hover:text-purple-300" target="_blank">GitHub Pages</a></p>
+                <p>পাওয়ার্ড বাই <a href="https://gohugo.io" target="_blank">Hugo</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
             </div>
         </div>
     </footer>
 
-    <!-- ===== SCRIPTS ===== -->
     <script src="{{ "js/main.js" | relURL }}"></script>
     <script>
-    // Mobile menu toggle
     document.getElementById('menuToggle')?.addEventListener('click', function() {
-        document.getElementById('mobileMenu').classList.toggle('hidden');
+        document.getElementById('mobileMenu').classList.toggle('open');
     });
     </script>
     {{ block "extra_scripts" . }}{{ end }}

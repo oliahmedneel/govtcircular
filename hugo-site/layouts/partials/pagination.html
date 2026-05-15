@@ -1,22 +1,23 @@
 {{ if gt .Paginator.TotalPages 1 }}
-<nav class="flex items-center justify-center gap-2 mt-12" aria-label="Pagination">
+<div class="pagination" aria-label="Pagination">
     {{ if .Paginator.HasPrev }}
-    <a href="{{ .Paginator.Prev.URL }}" class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition text-sm font-medium">← পূর্ববর্তী</a>
+    <a href="{{ .Paginator.Prev.URL }}" class="prev">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        পূর্ববর্তী
+    </a>
     {{ end }}
 
     {{ range .Paginator.Pagers }}
-    <a href="{{ .URL }}" class="px-3 py-2 rounded-lg text-sm font-medium transition
-        {{ if eq .PageNumber $.Paginator.PageNumber }}
-            bg-purple-600 text-white
-        {{ else }}
-            bg-white border border-gray-200 text-gray-700 hover:bg-gray-50
-        {{ end }}">
+    <a href="{{ .URL }}" class="{{ if eq .PageNumber $.Paginator.PageNumber }}active{{ end }}">
         {{ .PageNumber }}
     </a>
     {{ end }}
 
     {{ if .Paginator.HasNext }}
-    <a href="{{ .Paginator.Next.URL }}" class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition text-sm font-medium">পরবর্তী →</a>
+    <a href="{{ .Paginator.Next.URL }}" class="next">
+        পরবর্তী
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
     {{ end }}
-</nav>
+</div>
 {{ end }}
