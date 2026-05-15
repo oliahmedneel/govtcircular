@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}Posts - JobSite{% endblock %}
+{% block page_icon %}bi-file-text{% endblock %}
+{% block page_title %}হুগো পোস্টসমূহ{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>
+                    <span class="badge bg-primary me-2">{{ posts|length }}</span>
+                    <i class="bi bi-file-text me-1"></i> জেনারেটেড পোস্ট
+                </h5>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-success" onclick="triggerGitPush()">
+                        <i class="bi bi-git me-1"></i> Git Push
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary" onclick="location.reload()">
+                        <i class="bi bi-arrow-clockwise"></i> রিফ্রেশ
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                {% if posts %}
+                <div class="data-table-wrapper">
+                    <div class="table-toolbar">
+                        <div class="search-box">
+                            <i class="bi bi-search text-muted"></i>
+                            <input type="text" id="postsSearchInput" placeholder="পোস্ট খুঁজুন..." class="form-control-sm">
+                        </div>
+                        <small class="text-muted">{{ posts|length }} টি পোস্ট</small>
+                    </div>
+                    <div class="table-container">
+                        <table class="table table-hover mb-0" id="postsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>শিরোনাম</th>
+                                    <th>ক্যাটাগরি</th>
+                                    <th>ফাইলের নাম</th>
+                                    <th>সাইজ</th>
+                                    <th>মডিফাইড</th>
+                                    <th class="text-end">অ্যাকশন</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for post in posts %}
+                                <tr>
+                                    <td>
+                                        <i class="bi bi-file-earmark-text me-1 text-primary"></i>
+                                        <span class="fw-medium small">{{ post.title[:80] }}{% if post.title|length > 80 %}...{% endif %}</span>
+                                    </td>
+                                    <td>
+                                        {% if post.category %}
+                                        <span class="badge bg-info">{{ post.category }}</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><code>{{ post.filename }}</code></td>
+                                    <td><small class="text-muted">{{ (post.size / 1024)|round(1) }} KB</small></td>
+                                    <td><small class="text-muted">{{ post.modified }}</small></td>
+                                    <td class="text-end">
+                                        <div class="row-actions btn-group btn-group-sm">
+                                            <button class="btn btn-outline-primary" onclick="viewPost('{{ post.filename.replace('.md', '') }}')" title="View">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger" onclick="deletePost('{{ post.filename }}')" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-file-earmark-text empty-icon"></i>
+                    <h5>কোন পোস্ট জেনারেট করা হয়নি</h5>
+                    <p>প্রথমে একটি ফাইল আপলোড ও প্রসেস করুন</p>
+                    <a href="/files" class="btn btn-primary mt-3">
+                        <i class="bi bi-folder me-1"></i> ফাইল ম্যানেজারে যান
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Post Stats Summary -->
+    <div class="col-12">
+        <div class="row g-3">
+            <div class="col-md-3 col-6">
+                <div class="card text-center p-3">
+                    <h4 class="mb-0 fw-bold text-primary">{{ posts|length }}</h4>
+                    <small class="text-muted">মোট পোস্ট</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card text-center p-3">
+                    <h4 class="mb-0 fw-bold text-success">{{ posts|selectattr('category')|list|length }}</h4>
+                    <small class="text-muted">ক্যাটেগরাইজড</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card text-center p-3">
+                    <h4 class="mb-0 fw-bold text-info">{{ (posts|sum(attribute='size') / 1024)|round|int }} KB</h4>
+                    <small class="text-muted">মোট সাইজ</small>
+                </div>
+            </div>
+            <div class="col-md-3 col-6">
+                <div class="card text-center p-3">
+                    <h4 class="mb-0 fw-bold text-warning">{{ posts|selectattr('category', 'equalto', '')|list|length + posts|rejectattr('category')|list|length }}</h4>
+                    <small class="text-muted">আনক্যাটেগরাইজড</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== VIEW POST MODAL ===== -->
+<div class="modal fade" id="viewPostModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-file-text me-2"></i>পোস্ট কন্টেন্ট</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <pre id="postContent" class="p-3 mb-0" style="max-height: 70vh; overflow-y: auto; white-space: pre-wrap; font-size: 13px; background: #f8f9fa; border-radius: 0;"></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">বন্ধ করুন</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== GIT PUSH MODAL ===== -->
+<div class="modal fade" id="gitPushModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-git me-2"></i> Git Push</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-medium">কমিট মেসেজ</label>
+                    <input type="text" class="form-control" id="gitCommitMessage" value="📝 Auto-deploy from dashboard" placeholder="Enter commit message">
+                </div>
+                <div id="gitPushStatus"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">বাতিল</button>
+                <button type="button" class="btn btn-success" onclick="executeGitPush()">
+                    <i class="bi bi-git me-1"></i> Push
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initTableSearch('postsSearchInput', 'postsTable');
+});
+</script>
+{% endblock %}

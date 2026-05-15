@@ -1,0 +1,89 @@
+# ============================================
+# JobSite — Hugo Site Configuration
+# ============================================
+
+baseURL = "https://oliahmedneel.github.io/govtcircular/"
+title = "বাংলাদেশ চাকরি ও বিজ্ঞপ্তি"
+locale = "bn-BD"
+defaultContentLanguage = "bn"
+enableRobotsTXT = true
+enableGitInfo = false
+
+# Site parameters
+[params]
+  description = "বাংলাদেশের সর্বশেষ চাকরির বিজ্ঞপ্তি, দরপত্র, ভর্তি ও সরকারি বিজ্ঞপ্তি - JobSite"
+  copyright = "© 2026 বাংলাদেশ চাকরি ও বিজ্ঞপ্তি"
+  author = "JobSite"
+  publisher = "JobSite Automation"
+  facebook_url = ""
+  twitter_url = ""
+  linkedin_url = ""
+  og_image = "/images/og-default.jpg"
+  subtitle = "বাংলাদেশের সর্বাধুনিক জব পোর্টাল"
+
+# Pagination
+paginate = 15
+paginatePath = "page"
+
+# Taxonomies
+[taxonomies]
+  category = "categories"
+  tag = "tags"
+
+# Permalinks
+[permalinks]
+  posts = "/:slug/"
+  jobs = "/jobs/:slug/"
+  tenders = "/tenders/:slug/"
+  notices = "/notices/:slug/"
+
+# Output formats
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+  page = ["HTML"]
+  section = ["HTML", "RSS"]
+  taxonomy = ["HTML", "RSS"]
+
+# Markdown rendering
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+    [markup.goldmark.extensions]
+      typographer = true
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 4
+
+# Menu
+[menu]
+  [[menu.main]]
+    name = "🏠 হোম"
+    url = "/"
+    weight = 1
+  [[menu.main]]
+    name = "💼 চাকরি"
+    url = "/categories/job-circular/"
+    weight = 2
+  [[menu.main]]
+    name = "📄 দরপত্র"
+    url = "/categories/tender-notice/"
+    weight = 3
+  [[menu.main]]
+    name = "🎓 ভর্তি"
+    url = "/categories/admission/"
+    weight = 4
+  [[menu.main]]
+    name = "📢 বিজ্ঞপ্তি"
+    url = "/categories/public-notice/"
+    weight = 5
+  [[menu.main]]
+    name = "ℹ️ অন্যান্য"
+    url = "/categories/unknown/"
+    weight = 6
+
+# Sitemap
+[sitemap]
+  changefreq = "daily"
+  priority = 0.8
+  filename = "sitemap.xml"

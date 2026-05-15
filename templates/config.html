@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% block title %}Settings - JobSite{% endblock %}
+{% block page_icon %}bi-gear{% endblock %}
+{% block page_title %}সেটিংস ও কনফিগারেশন{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <!-- ===== CONFIGURATION FORM ===== -->
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-file-code"></i> কনফিগারেশন (settings.yaml)</h5>
+                <button class="btn btn-sm btn-primary" onclick="saveConfig()">
+                    <i class="bi bi-save me-1"></i> সংরক্ষণ
+                </button>
+            </div>
+            <div class="card-body">
+                <!-- AI Settings -->
+                <h6 class="fw-bold text-primary mb-3"><i class="bi bi-cpu me-1"></i> AI সেটিংস</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">AI মডেল</label>
+                        <select class="form-select" id="cfg_ai_model">
+                            <option value="gemini-2.0-flash" {% if config.ai.model == 'gemini-2.0-flash' %}selected{% endif %}>Gemini 2.0 Flash (দ্রুত)</option>
+                            <option value="gemini-2.0-pro" {% if config.ai.model == 'gemini-2.0-pro' %}selected{% endif %}>Gemini 2.0 Pro (মানসম্পন্ন)</option>
+                            <option value="gemini-1.5-pro" {% if config.ai.model == 'gemini-1.5-pro' %}selected{% endif %}>Gemini 1.5 Pro</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-medium">Temperature</label>
+                        <div class="d-flex align-items-center gap-2">
+                            <input type="range" class="form-range" id="cfg_ai_temp" min="0" max="1" step="0.1" value="{{ config.ai.temperature|default(0.7) }}">
+                            <span class="badge bg-primary" id="cfg_ai_temp_val" style="min-width: 35px;">{{ config.ai.temperature|default(0.7) }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-medium">Max Tokens</label>
+                        <input type="number" class="form-control" id="cfg_ai_tokens" value="{{ config.ai.max_tokens|default(8192) }}" min="1024" max="32768" step="1024">
+                    </div>
+                </div>
+
+                <!-- OCR Settings -->
+                <h6 class="fw-bold text-success mb-3"><i class="bi bi-file-image me-1"></i> OCR সেটিংস</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">OCR ভাষা</label>
+                        <input type="text" class="form-control" id="cfg_ocr_lang" value="{{ config.ocr.languages|default('ben+eng') }}" placeholder="ben+eng">
+                        <small class="text-muted">একাধিক ভাষার জন্য + ব্যবহার করুন (যেমন: ben+eng)</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Tesseract Path</label>
+                        <input type="text" class="form-control" id="cfg_ocr_tesseract" value="{{ config.ocr.tesseract_cmd|default('') }}" placeholder="C:\Program Files\Tesseract-OCR\tesseract.exe">
+                    </div>
+                </div>
+
+                <!-- Git Settings -->
+                <h6 class="fw-bold text-warning mb-3"><i class="bi bi-git me-1"></i> Git সেটিংস</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="cfg_git_push" {% if config.git.auto_push|default(true) %}checked{% endif %}>
+                            <label class="form-check-label fw-medium" for="cfg_git_push">স্বয়ংক্রিয় Git Push</label>
+                        </div>
+                        <small class="text-muted d-block mt-1">প্রতি পোস্টের পর Git Push করবে</small>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Git Branch</label>
+                        <input type="text" class="form-control" id="cfg_git_branch" value="{{ config.git.branch|default('main') }}">
+                    </div>
+                </div>
+
+                <!-- Watcher Settings -->
+                <h6 class="fw-bold text-info mb-3"><i class="bi bi-eye me-1"></i> ওয়াচার সেটিংস</h6>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">পোল ইন্টারভাল (সেকেন্ড)</label>
+                        <input type="number" class="form-control" id="cfg_watcher_interval" value="{{ config.watcher.poll_interval|default(5) }}" min="1" max="60">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-medium">Settle Delay (সেকেন্ড)</label>
+                        <input type="number" class="form-control" id="cfg_watcher_delay" value="{{ config.watcher.settle_delay|default(3) }}" min="0" max="30">
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-white text-end">
+                <button class="btn btn-primary" onclick="saveConfig()">
+                    <i class="bi bi-save me-1"></i> কনফিগারেশন সংরক্ষণ
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== RIGHT SIDEBAR ===== -->
+    <div class="col-lg-4 d-flex flex-column gap-4">
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-lightning"></i> দ্রুত অ্যাকশন</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary" onclick="runSetup()">
+                        <i class="bi bi-tools me-1"></i> সেটআপ রান করুন
+                    </button>
+                    <button class="btn btn-outline-success" onclick="quickGitPush()">
+                        <i class="bi bi-git me-1"></i> Git Push
+                    </button>
+                    <button class="btn btn-outline-danger" onclick="restartApp()">
+                        <i class="bi bi-arrow-repeat me-1"></i> রিস্টার্ট
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Prompts -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-file-text"></i> প্রম্পট ফাইলসমূহ</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                        <div>
+                            <small class="fw-medium d-block">Classification Prompt</small>
+                            <small class="text-muted">AI ক্লাসিফিকেশন</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary" onclick="editPrompt('classification')">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                        <div>
+                            <small class="fw-medium d-block">Extraction Prompt</small>
+                            <small class="text-muted">ডাটা এক্সট্রাকশন</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary" onclick="editPrompt('extraction')">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+                        <div>
+                            <small class="fw-medium d-block">Article Generation Prompt</small>
+                            <small class="text-muted">পোস্ট জেনারেশন</small>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary" onclick="editPrompt('article_generation')">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Config Summary -->
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-info-circle"></i> বর্তমান কনফিগ</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0 small">
+                    <dt class="col-sm-5 text-muted">AI Model:</dt>
+                    <dd class="col-sm-7">{{ config.ai.model|default('N/A') }}</dd>
+                    <dt class="col-sm-5 text-muted">Temperature:</dt>
+                    <dd class="col-sm-7">{{ config.ai.temperature|default('N/A') }}</dd>
+                    <dt class="col-sm-5 text-muted">Max Tokens:</dt>
+                    <dd class="col-sm-7">{{ config.ai.max_tokens|default('N/A') }}</dd>
+                    <dt class="col-sm-5 text-muted">OCR Lang:</dt>
+                    <dd class="col-sm-7">{{ config.ocr.languages|default('N/A') }}</dd>
+                    <dt class="col-sm-5 text-muted">Auto Push:</dt>
+                    <dd class="col-sm-7">{{ '✅ Yes' if config.git.auto_push|default(false) else '❌ No' }}</dd>
+                    <dt class="col-sm-5 text-muted">Git Branch:</dt>
+                    <dd class="col-sm-7">{{ config.git.branch|default('main') }}</dd>
+                    <dt class="col-sm-5 text-muted">Poll Interval:</dt>
+                    <dd class="col-sm-7">{{ config.watcher.poll_interval|default('N/A') }}s</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== EDIT PROMPT MODAL ===== -->
+<div class="modal fade" id="editPromptModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-file-text me-2"></i><span id="promptFileName"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <textarea id="promptContent" class="form-control border-0" style="min-height: 400px; font-family: 'Cascadia Code', 'Fira Code', monospace; font-size: 13px; resize: vertical; border-radius: 0;"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">বাতিল</button>
+                <button type="button" class="btn btn-primary" onclick="savePrompt()">সংরক্ষণ</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Temperature slider sync
+    const tempSlider = document.getElementById('cfg_ai_temp');
+    const tempVal = document.getElementById('cfg_ai_temp_val');
+    if (tempSlider && tempVal) {
+        tempSlider.addEventListener('input', function() {
+            tempVal.textContent = this.value;
+        });
+    }
+});
+</script>
+{% endblock %}

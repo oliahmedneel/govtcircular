@@ -1,0 +1,130 @@
+# ========================================
+# JobSite — Configuration Settings
+# ========================================
+# Edit these values to match your local setup.
+
+# --- Paths ---
+paths:
+  # Where scanned images/PDFs are dropped
+  uploads: "uploads"
+  # Successfully processed files are moved here
+  processed: "processed"
+  # Files that failed processing
+  failed: "failed"
+  # Generated thumbnails
+  thumbnails: "thumbnails"
+  # Log files
+  logs: "logs"
+  # SQLite database for duplicate detection
+  data: "data"
+  # AI prompt templates
+  prompts: "prompts"
+  # Hugo site root directory
+  hugo_site: "hugo-site"
+  # Hugo content directory (relative to hugo_site)
+  hugo_content: "content/posts"
+  # Hugo static images directory (relative to hugo_site)
+  hugo_images: "static/images"
+
+# --- Tesseract OCR ---
+ocr:
+  # Path to Tesseract executable on Windows
+  tesseract_cmd: "C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
+  # Languages for OCR (Bangla + English)
+  languages: "ben+eng"
+  # Page segmentation mode (6 = uniform block of text)
+  psm: 6
+  # OCR engine mode (3 = default, uses LSTM + legacy)
+  oem: 3
+
+# --- Image Preprocessing ---
+image:
+  # Convert to grayscale before OCR
+  grayscale: true
+  # Apply adaptive thresholding
+  threshold: true
+  # Sharpen image
+  sharpen: true
+  # Resize factor (1.0 = no resize, 2.0 = double size)
+  resize_factor: 1.5
+  # Maximum image dimension (pixels) for processing
+  max_dimension: 4000
+  # Supported file extensions
+  supported_extensions:
+    - ".jpg"
+    - ".jpeg"
+    - ".png"
+    - ".bmp"
+    - ".tiff"
+    - ".tif"
+    - ".pdf"
+    - ".webp"
+
+# --- Google Gemini AI ---
+ai:
+  # Model name (use gemini-2.0-flash for speed, gemini-2.0-pro for quality)
+  model: "gemini-2.0-flash"
+  # Maximum output tokens
+  max_tokens: 8192
+  # Temperature (0.0 = deterministic, 1.0 = creative)
+  temperature: 0.7
+  # Request timeout in seconds
+  timeout: 60
+  # Maximum retries on failure
+  max_retries: 3
+  # Delay between retries (seconds)
+  retry_delay: 5
+
+# --- Categories ---
+categories:
+  job_circular: "চাকরির বিজ্ঞপ্তি"
+  tender_notice: "দরপত্র বিজ্ঞপ্তি"
+  admission: "ভর্তি বিজ্ঞপ্তি"
+  public_notice: "সরকারি বিজ্ঞপ্তি"
+  unknown: "অন্যান্য"
+
+# --- Duplicate Detection ---
+duplicate:
+  # Fuzzy match similarity threshold (0-100). Above this = duplicate.
+  similarity_threshold: 85
+  # Enable hash-based duplicate checking
+  hash_check: true
+  # Enable title similarity checking
+  title_check: true
+
+# --- Git Automation ---
+git:
+  # Enable automatic git push after post creation
+  auto_push: true
+  # Git commit message template ({title} is replaced with post title)
+  commit_message: "📝 New post: {title}"
+  # Git branch
+  branch: "main"
+
+# --- Hugo ---
+hugo:
+  # Hugo executable path (if not in PATH)
+  executable: "hugo"
+  # Base URL for the site
+  base_url: "https://oliahmedneel.github.io/govtcircular/"
+  # Site title
+  site_title: "বাংলাদেশ চাকরি ও বিজ্ঞপ্তি"
+  # Site language
+  language: "bn"
+
+# --- File Watcher ---
+watcher:
+  # Polling interval in seconds
+  poll_interval: 5
+  # Delay after file creation before processing (seconds)
+  # Allows large files to finish copying
+  settle_delay: 3
+
+# --- Logging ---
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  level: "INFO"
+  # Maximum log file size (bytes) before rotation
+  max_bytes: 5242880  # 5 MB
+  # Number of backup log files to keep
+  backup_count: 5

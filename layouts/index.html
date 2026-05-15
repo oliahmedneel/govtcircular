@@ -1,0 +1,140 @@
+{{ define "main" }}
+<!-- ===== HERO SECTION ===== -->
+<section class="bg-gradient-to-br from-purple-700 via-purple-600 to-blue-500 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+        <div class="text-center max-w-3xl mx-auto">
+            <h1 class="text-3xl md:text-5xl font-bold mb-4 leading-tight">{{ .Site.Title }}</h1>
+            <p class="text-lg md:text-xl text-purple-100 mb-8">{{ .Site.Params.subtitle }}</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="/categories/job-circular/" class="px-6 py-3 bg-white text-purple-700 rounded-xl font-semibold hover:bg-purple-50 transition shadow-lg">💼 চাকরির বিজ্ঞপ্তি</a>
+                <a href="/categories/tender-notice/" class="px-6 py-3 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition border border-white/20">📄 দরপত্র</a>
+                <a href="/categories/admission/" class="px-6 py-3 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition border border-white/20">🎓 ভর্তি</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== STATS BAR ===== -->
+<section class="border-b border-gray-200 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-gray-200">
+            <div class="bg-white p-6 text-center">
+                <div class="text-2xl font-bold text-purple-600">{{ len (where .Site.RegularPages "Section" "posts") }}</div>
+                <div class="text-sm text-gray-500">মোট পোস্ট</div>
+            </div>
+            <div class="bg-white p-6 text-center">
+                <div class="text-2xl font-bold text-green-600">{{ len (where .Site.RegularPages "Params.categories" "intersect" (slice "job-circular")) }}</div>
+                <div class="text-sm text-gray-500">চাকরি</div>
+            </div>
+            <div class="bg-white p-6 text-center">
+                <div class="text-2xl font-bold text-blue-600">{{ len (where .Site.RegularPages "Params.categories" "intersect" (slice "tender-notice")) }}</div>
+                <div class="text-sm text-gray-500">দরপত্র</div>
+            </div>
+            <div class="bg-white p-6 text-center">
+                <div class="text-2xl font-bold text-orange-600">{{ len (where .Site.RegularPages "Params.categories" "intersect" (slice "admission")) }}</div>
+                <div class="text-sm text-gray-500">ভর্তি</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CATEGORY CARDS ===== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <h2 class="text-2xl font-bold text-gray-900 mb-8">📂 ক্যাটাগরি অনুযায়ী দেখুন</h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {{ $pages := .Site.RegularPages }}
+        {{ range .Site.Taxonomies.categories.ByCount }}
+        {{ $count := .Count }}
+        {{ $name := .Page.Title }}
+        {{ $slug := .Page.Slug }}
+        {{ $icons := dict "job-circular" "💼" "tender-notice" "📄" "admission" "🎓" "public-notice" "📢" "unknown" "ℹ️" }}
+        {{ $colors := dict "job-circular" "from-purple-500 to-purple-700" "tender-notice" "from-green-500 to-green-700" "admission" "from-blue-500 to-blue-700" "public-notice" "from-orange-500 to-orange-700" "unknown" "from-gray-500 to-gray-700" }}
+        <a href="{{ .Page.RelPermalink }}" class="group block p-6 rounded-xl bg-gradient-to-br {{ index $colors $slug }} text-white shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
+            <div class="text-3xl mb-2">{{ index $icons $slug | default "📌" }}</div>
+            <h3 class="font-bold text-lg">{{ $name }}</h3>
+            <p class="text-white/80 text-sm mt-1">{{ $count }} টি পোস্ট</p>
+        </a>
+        {{ end }}
+    </div>
+</section>
+
+<!-- ===== LATEST POSTS ===== -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold text-gray-900">🆕 সর্বশেষ পোস্ট</h2>
+        <a href="/posts/" class="text-purple-600 hover:text-purple-700 font-medium text-sm">সব দেখুন →</a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {{ $latest := first 9 (where .Site.RegularPages "Section" "posts") }}
+        {{ range $latest }}
+        <article class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition group">
+            <div class="p-6">
+                <!-- Category Badge -->
+                <div class="flex items-center gap-2 mb-3">
+                    {{ range .Params.categories }}
+                    <a href="/categories/{{ . | urlize }}/" class="text-xs font-medium px-2.5 py-1 rounded-full 
+                        {{ if eq . "job-circular" }}bg-purple-100 text-purple-700{{ else if eq . "tender-notice" }}bg-green-100 text-green-700{{ else if eq . "admission" }}bg-blue-100 text-blue-700{{ else if eq . "public-notice" }}bg-orange-100 text-orange-700{{ else }}bg-gray-100 text-gray-700{{ end }}">
+                        {{ . | humanize }}
+                    </a>
+                    {{ end }}
+                </div>
+
+                <!-- Title -->
+                <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition line-clamp-2">
+                    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                </h3>
+
+                <!-- Summary -->
+                <p class="text-sm text-gray-600 mb-4 line-clamp-3">{{ .Summary | plainify | truncate 150 }}</p>
+
+                <!-- Meta -->
+                <div class="flex items-center justify-between text-xs text-gray-400">
+                    <span>{{ .PublishDate.Format "02 Jan 2006" }}</span>
+                    <span>{{ .ReadingTime }} মিনিট পড়া</span>
+                </div>
+            </div>
+        </article>
+        {{ else }}
+        <div class="col-span-3 text-center py-16">
+            <div class="text-5xl mb-4">📭</div>
+            <h3 class="text-xl font-bold text-gray-400 mb-2">এখনো কোনো পোস্ট নেই</h3>
+            <p class="text-gray-400">প্রথম পোস্ট প্রকাশের অপেক্ষায়...</p>
+        </div>
+        {{ end }}
+    </div>
+</section>
+
+<!-- ===== ALL POSTS SECTION ===== -->
+{{ $posts := where .Site.RegularPages "Section" "posts" }}
+{{ if gt (len $posts) 9 }}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="text-center">
+        <a href="/posts/" class="inline-flex items-center px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition shadow">সকল পোস্ট দেখুন →</a>
+    </div>
+</section>
+{{ end }}
+
+<!-- ===== JSON-LD STRUCTURED DATA ===== -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "{{ .Site.Title }}",
+    "description": "{{ .Site.Params.description }}",
+    "url": "{{ .Permalink }}",
+    "mainEntity": {
+        "@type": "ItemList",
+        "itemListElement": [
+            {{ range $index, $post := first 20 (where .Site.RegularPages "Section" "posts") }}
+            {
+                "@type": "ListItem",
+                "position": {{ add $index 1 }},
+                "url": "{{ $post.Permalink }}"
+            }{{ if lt $index 19 }},{{ end }}
+            {{ end }}
+        ]
+    }
+}
+</script>
+{{ end }}

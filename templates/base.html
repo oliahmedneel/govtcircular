@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="bn" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}JobSite Dashboard{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon"><i class="bi bi-rocket-takeoff"></i></div>
+            <div class="logo-text">
+                <h5>JobSite</h5>
+                <small>Dashboard v3.0</small>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">মেনু</div>
+
+            <div class="nav-item">
+                <a class="nav-link" href="/">
+                    <i class="bi bi-speedometer2"></i>
+                    <span class="nav-label">ড্যাশবোর্ড</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="/files">
+                    <i class="bi bi-folder"></i>
+                    <span class="nav-label">ফাইল ম্যানেজার</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="/posts">
+                    <i class="bi bi-file-text"></i>
+                    <span class="nav-label">পোস্টসমূহ</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="/categories">
+                    <i class="bi bi-tags"></i>
+                    <span class="nav-label">ক্যাটাগরি</span>
+                </a>
+            </div>
+
+            <div class="nav-section" style="margin-top: 12px;">সিস্টেম</div>
+
+            <div class="nav-item">
+                <a class="nav-link" href="/logs">
+                    <i class="bi bi-terminal"></i>
+                    <span class="nav-label">লগ ভিউয়ার</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="/config-page">
+                    <i class="bi bi-gear"></i>
+                    <span class="nav-label">সেটিংস</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="#" onclick="window.open('http://localhost:1313', '_blank')">
+                    <i class="bi bi-globe"></i>
+                    <span class="nav-label">Hugo Site</span>
+                </a>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="bi bi-chevron-left"></i>
+                <span>সংকুচিত করুন</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN WRAPPER ===== -->
+    <div class="main-wrapper">
+
+        <!-- Top Bar -->
+        <header class="topbar">
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn-icon d-md-none" id="mobileSidebarToggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="page-title">
+                    <i class="{% block page_icon %}bi-speedometer2{% endblock %}"></i>
+                    {% block page_title %}JobSite{% endblock %}
+                </div>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn-icon" id="themeToggle" title="Toggle Theme">
+                    <i class="bi bi-moon-stars"></i>
+                </button>
+                <span class="status-badge" id="statusBadge">
+                    <span class="status-dot"></span> চলছে
+                </span>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        <div class="container-fluid px-4 mt-3">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category if category != 'message' else 'info' }} alert-dismissible fade show" role="alert">
+                    <i class="bi bi-info-circle me-1"></i> {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <i class="bi bi-info-circle me-2"></i>
+                <strong class="me-auto">JobSite</strong>
+                <small>just now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body"></div>
+        </div>
+    </div>
+
+    <!-- ===== LOADING OVERLAY ===== -->
+    <div id="loadingOverlay" class="loading-overlay d-none">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p>প্রসেসিং হচ্ছে...</p>
+    </div>
+
+    <!-- ===== MODALS CONTAINER ===== -->
+    {% block modals %}{% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="/static/js/main.js"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

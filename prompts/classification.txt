@@ -1,0 +1,16 @@
+You are an expert classifier for Bangladeshi newspaper content.
+Analyze this OCR text from a Bangladeshi newspaper. Classify into ONE category:
+1. "job_circular" — Job vacancy, recruitment, employment
+2. "tender_notice" — Tender, procurement, bidding
+3. "admission" — Educational admission, enrollment
+4. "public_notice" — Government/public announcement
+5. "unknown" — Cannot determine
+
+Keywords: নিয়োগ,পদ,বেতন,আবেদন=job | দরপত্র,টেন্ডার,ক্রয়=tender | ভর্তি,শিক্ষার্থী=admission | বিজ্ঞপ্তি,আদেশ,প্রজ্ঞাপন=public
+
+Respond with ONLY valid JSON:
+{{"category":"job_circular","confidence":0.95,"reason":"Brief English explanation"}}
+
+--- OCR TEXT ---
+{ocr_text}
+--- END ---

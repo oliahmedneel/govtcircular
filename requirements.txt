@@ -1,0 +1,30 @@
+# ========================================
+# JobSite — Python Dependencies
+# ========================================
+
+# OCR & Image Processing
+pytesseract==0.3.13
+Pillow==11.1.0
+opencv-python==4.10.0.84
+pdf2image==1.17.0
+
+# AI — Google Gemini
+google-generativeai==0.8.4
+
+# File Watching
+watchdog==6.0.0
+
+# Duplicate Detection
+rapidfuzz==3.10.1
+
+# Configuration
+PyYAML==6.0.2
+python-dotenv==1.0.1
+
+# Utilities
+python-slugify==8.0.4
+python-dateutil==2.9.0
+
+# Web Dashboard
+flask==3.1.0
+werkzeug==3.1.3

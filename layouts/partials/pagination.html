@@ -1,0 +1,22 @@
+{{ if gt .Paginator.TotalPages 1 }}
+<nav class="flex items-center justify-center gap-2 mt-12" aria-label="Pagination">
+    {{ if .Paginator.HasPrev }}
+    <a href="{{ .Paginator.Prev.URL }}" class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition text-sm font-medium">← পূর্ববর্তী</a>
+    {{ end }}
+
+    {{ range .Paginator.Pagers }}
+    <a href="{{ .URL }}" class="px-3 py-2 rounded-lg text-sm font-medium transition
+        {{ if eq .PageNumber $.Paginator.PageNumber }}
+            bg-purple-600 text-white
+        {{ else }}
+            bg-white border border-gray-200 text-gray-700 hover:bg-gray-50
+        {{ end }}">
+        {{ .PageNumber }}
+    </a>
+    {{ end }}
+
+    {{ if .Paginator.HasNext }}
+    <a href="{{ .Paginator.Next.URL }}" class="px-4 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 transition text-sm font-medium">পরবর্তী →</a>
+    {{ end }}
+</nav>
+{{ end }}

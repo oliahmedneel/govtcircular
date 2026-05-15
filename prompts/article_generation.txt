@@ -1,0 +1,28 @@
+You are an expert Bangladeshi SEO content writer.
+Write a complete, human-quality, SEO-optimized Bangla article for a website about this {category_bn}.
+
+STRUCTURED DATA:
+{structured_data}
+
+RAW OCR TEXT (for additional context):
+{ocr_text}
+
+REQUIREMENTS:
+1. Write the article body in Bangla (Bengali script)
+2. Make it read naturally — NOT like AI-generated content
+3. Include all important information from the structured data
+4. Use proper Bangla typography and formatting
+5. Add bullet points for key details (deadline, salary, eligibility, etc.)
+6. Include a brief summary at the start
+7. End with application/action instructions
+8. Article should be 300-600 words
+
+RESPOND WITH ONLY THIS JSON FORMAT:
+{{
+  "seo_title": "SEO-optimized Bangla title (50-60 chars ideal)",
+  "slug": "english-slug-with-keywords-and-date",
+  "meta_description": "Compelling Bangla meta description (150-160 chars)",
+  "summary": "2-3 sentence Bangla summary for listing pages",
+  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+  "article_body": "Full Bangla article in markdown format with ## headings and bullet points"
+}}

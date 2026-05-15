@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.LanguageCode }}" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <!-- SEO Meta -->
+    <title>{{ if .Title }}{{ .Title }} | {{ end }}{{ .Site.Title }}</title>
+    <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+    <meta name="author" content="{{ .Site.Params.author }}">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="bn">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="{{ .Title }}">
+    <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+    <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+    <meta property="og:url" content="{{ .Permalink }}">
+    <meta property="og:site_name" content="{{ .Site.Title }}">
+    <meta property="og:locale" content="bn_BD">
+    {{ with .Params.image }}<meta property="og:image" content="{{ . | absURL }}">{{ end }}
+    {{ if not .Params.image }}<meta property="og:image" content="{{ .Site.Params.og_image | absURL }}">{{ end }}
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ .Title }}">
+    <meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
+    {{ with .Params.image }}<meta name="twitter:image" content="{{ . | absURL }}">{{ end }}
+    
+    <!-- Article Meta -->
+    {{ if .IsPage }}
+    <meta property="article:published_time" content="{{ .PublishDate.Format "2006-01-02T15:04:05Z07:00" }}">
+    <meta property="article:modified_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}">
+    {{ range .Params.categories }}<meta property="article:section" content="{{ . }}">{{ end }}
+    {{ range .Params.tags }}<meta property="article:tag" content="{{ . }}">{{ end }}
+    {{ end }}
+    
+    <!-- RSS -->
+    <link rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" href="{{ "/index.xml" | absURL }}">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ .Permalink }}">
+    
+    <!-- Preload assets -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ "css/style.css" | relURL }}">
+        "@type": "Organization",
+        "name": "{{ .Site.Title }}",
+        "url": "{{ .Site.BaseURL }}",
+        "description": "{{ .Site.Params.description }}",
+        "publisher": {
+            "@type": "Organization",
+            "name": "{{ .Site.Params.publisher }}"
+        }
+    }
+    </script>
+    
+    <!-- Structured Data: BreadcrumbList -->
+    {{ if not .IsHome }}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [{
+            "@type": "ListItem",
+            "position": 1,
+            "name": "হোম",
+            "item": "{{ .Site.BaseURL }}"
+        },{{ if .IsPage }}
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "{{ index .Params.categories 0 }}",
+            "item": "{{ "/categories/" | absURL }}{{ index .Params.categories 0 | urlize }}/"
+        },{{ end }}
+        {
+            "@type": "ListItem",
+            "position": {{ if .IsPage }}3{{ else }}2{{ end }},
+            "name": "{{ .Title }}",
+            "item": "{{ .Permalink }}"
+        }]
+    }
+    </script>
+    {{ end }}
+    
+    {{ block "extra_head" . }}{{ end }}
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+    <!-- ===== HEADER / NAVIGATION ===== -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <a href="{{ "/" | relURL }}" class="flex items-center space-x-2 space-x-reverse rtl-space-x-reverse">
+                    <span class="w-9 h-9 bg-gradient-to-br from-purple-600 to-blue-500 rounded-lg flex items-center justify-center text-white text-lg font-bold">JS</span>
+                    <span class="text-lg font-bold text-gray-900 hidden sm:block">{{ .Site.Title }}</span>
+                </a>
+
+                <!-- Desktop Nav -->
+                <nav class="hidden md:flex items-center space-x-1 space-x-reverse">
+                    {{ range .Site.Menus.main }}
+                    <a href="{{ .URL | relURL }}" class="px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-purple-50 hover:text-purple-700 {{ if $.HasMenuCurrent "main" . }}text-purple-700 bg-purple-50{{ else }}text-gray-600{{ end }}">
+                        {{ .Name }}
+                    </a>
+                    {{ end }}
+                </nav>
+
+                <!-- Mobile Toggle -->
+                <button id="menuToggle" class="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100" aria-label="মেনু">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="md:hidden hidden border-t border-gray-100 bg-white">
+            <div class="px-4 py-3 space-y-1">
+                {{ range .Site.Menus.main }}
+                <a href="{{ .URL | relURL }}" class="block px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-purple-50 hover:text-purple-700">{{ .Name }}</a>
+                {{ end }}
+            </div>
+        </div>
+    </header>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="min-h-screen">
+        {{ block "main" . }}{{ end }}
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="bg-gray-900 text-gray-300 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- About -->
+                <div>
+                    <h3 class="text-white text-lg font-bold mb-4">{{ .Site.Title }}</h3>
+                    <p class="text-sm leading-relaxed">{{ .Site.Params.description }}</p>
+                </div>
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-white text-lg font-bold mb-4">দ্রুত লিংক</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="{{ "/" | relURL }}" class="hover:text-white transition-colors">হোম</a></li>
+                        <li><a href="{{ "/categories/job-circular/" | relURL }}" class="hover:text-white transition-colors">চাকরির বিজ্ঞপ্তি</a></li>
+                        <li><a href="{{ "/categories/tender-notice/" | relURL }}" class="hover:text-white transition-colors">দরপত্র</a></li>
+                        <li><a href="{{ "/categories/admission/" | relURL }}" class="hover:text-white transition-colors">ভর্তি</a></li>
+                        <li><a href="{{ "/categories/public-notice/" | relURL }}" class="hover:text-white transition-colors">সরকারি বিজ্ঞপ্তি</a></li>
+                    </ul>
+                </div>
+                <!-- Info -->
+                <div>
+                    <h3 class="text-white text-lg font-bold mb-4">তথ্য</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="{{ "/sitemap.xml" | absURL }}" class="hover:text-white transition-colors">সাইটম্যাপ</a></li>
+                        <li><a href="{{ "/index.xml" | absURL }}" class="hover:text-white transition-colors">RSS ফিড</a></li>
+                        <li>সর্বশেষ আপডেট: {{ now.Format "January 2, 2006" }}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm">
+                <p>{{ .Site.Params.copyright }}</p>
+                <p class="mt-1">পাওয়ার্ড বাই <a href="https://gohugo.io" class="text-purple-400 hover:text-purple-300" target="_blank">Hugo</a> & <a href="https://pages.github.com" class="text-purple-400 hover:text-purple-300" target="_blank">GitHub Pages</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ===== SCRIPTS ===== -->
+    <script src="{{ "js/main.js" | relURL }}"></script>
+    <script>
+    // Mobile menu toggle
+    document.getElementById('menuToggle')?.addEventListener('click', function() {
+        document.getElementById('mobileMenu').classList.toggle('hidden');
+    });
+    </script>
+    {{ block "extra_scripts" . }}{{ end }}
+</body>
+</html>

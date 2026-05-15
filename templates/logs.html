@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Logs - JobSite{% endblock %}
+{% block page_icon %}bi-terminal{% endblock %}
+{% block page_title %}লগ ভিউয়ার{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-journal-text"></i> সিস্টেম লগ</h5>
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <!-- Log Type Selector -->
+                    <div class="btn-group btn-group-sm">
+                        {% for lt in log_types %}
+                        <a href="/logs?type={{ lt }}&lines={{ lines }}"
+                           class="btn btn-sm {% if current_log == lt %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                            {{ lt|upper }}.log
+                        </a>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Line Count -->
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-sm btn-outline-secondary {% if lines == 100 %}active{% endif %}" onclick="changeLines(100)">100</button>
+                        <button class="btn btn-sm btn-outline-secondary {% if lines == 200 %}active{% endif %}" onclick="changeLines(200)">200</button>
+                        <button class="btn btn-sm btn-outline-secondary {% if lines == 500 %}active{% endif %}" onclick="changeLines(500)">500</button>
+                        <button class="btn btn-sm btn-outline-secondary {% if lines == 1000 %}active{% endif %}" onclick="changeLines(1000)">1000</button>
+                    </div>
+
+                    <button class="btn btn-sm btn-outline-success" onclick="location.reload()" title="Refresh">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <button class="btn btn-sm {% if current_log == 'app' %}btn-info{% else %}btn-outline-info{% endif %}"
+                            id="liveLogToggle"
+                            onclick="toggleLiveLog()"
+                            data-log-type="{{ current_log }}"
+                            data-lines="{{ lines }}">
+                        <i class="bi bi-broadcast"></i> লাইভ
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <pre id="logContent" class="log-viewer p-3 mb-0">{{ content }}</pre>
+            </div>
+            <div class="card-footer bg-white py-2 d-flex justify-content-between align-items-center">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    শেষ {{ lines }} লাইন দেখানো হচ্ছে
+                    {% if current_log == 'app' %}
+                    <span class="ms-2 badge bg-info">প্রধান লগ</span>
+                    {% else %}
+                    <span class="ms-2 badge bg-warning">এরর লগ</span>
+                    {% endif %}
+                </small>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-secondary" onclick="copyLogs()">
+                        <i class="bi bi-clipboard me-1"></i> কপি
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const logViewer = document.getElementById('logContent');
+    if (logViewer) {
+        logViewer.scrollTop = logViewer.scrollHeight;
+    }
+});
+</script>
+{% endblock %}

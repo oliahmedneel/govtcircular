@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% block title %}File Manager - JobSite{% endblock %}
+{% block page_icon %}bi-folder{% endblock %}
+{% block page_title %}ফাইল ম্যানেজার{% endblock %}
+
+{% block content %}
+<!-- ===== FILE TABS ===== -->
+<div class="page-tabs">
+    <button class="page-tab active" onclick="switchFileTab('uploads', this)">
+        <i class="bi bi-cloud-arrow-up"></i> আপলোড <span class="badge bg-primary ms-1">{{ uploads|length }}</span>
+    </button>
+    <button class="page-tab" onclick="switchFileTab('processed', this)">
+        <i class="bi bi-check-circle"></i> প্রসেসড <span class="badge bg-success ms-1">{{ processed|length }}</span>
+    </button>
+    <button class="page-tab" onclick="switchFileTab('failed', this)">
+        <i class="bi bi-exclamation-circle"></i> ব্যর্থ <span class="badge bg-danger ms-1">{{ failed|length }}</span>
+    </button>
+    <button class="page-tab" onclick="switchFileTab('database', this)">
+        <i class="bi bi-database"></i> ডাটাবেস
+    </button>
+</div>
+
+<!-- ===== UPLOADS TAB ===== -->
+<div id="tab-uploads" class="file-tab-content">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-upload"></i> ফাইল আপলোড</h5>
+                </div>
+                <div class="card-body">
+                    <div class="upload-zone mb-3" id="fileUploadZone">
+                        <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+                        <p class="upload-text">ফাইল ড্রপ করুন অথবা ক্লিক করুন</p>
+                        <small class="upload-hint">একাধিক ফাইল সাপোর্টেড</small>
+                        <input type="file" id="multiFileInput" class="d-none" multiple accept=".jpg,.jpeg,.png,.bmp,.tiff,.tif,.pdf,.webp">
+                    </div>
+                    <button class="btn btn-primary w-100" onclick="document.getElementById('multiFileInput').click()">
+                        <i class="bi bi-cloud-arrow-up me-1"></i> ফাইল সিলেক্ট করুন
+                    </button>
+                    <div id="multiUploadStatus" class="mt-2 small d-none"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5><span class="badge bg-primary me-2">{{ uploads|length }}</span> আপলোডকৃত ফাইল</h5>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary" onclick="document.getElementById('multiFileInput').click()">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                        {% if uploads %}
+                        <button class="btn btn-outline-danger" onclick="clearFolder('uploads', () => location.reload())">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if uploads %}
+                    <div class="file-list">
+                        {% for file in uploads %}
+                        <div class="file-item">
+                            <div class="file-icon icon-image">
+                                <i class="bi {{ 'bi-file-image' if file.ext in ['.jpg','.jpeg','.png','.bmp','.webp','.tiff','.tif'] else 'bi-file-pdf' if file.ext == '.pdf' else 'bi-file-earmark' }}"></i>
+                            </div>
+                            <div class="file-info">
+                                <div class="file-name">{{ file.name }}</div>
+                                <div class="file-meta">
+                                    <span>{{ file.size_hr }}</span>
+                                    <span>&middot;</span>
+                                    <span>{{ file.modified }}</span>
+                                </div>
+                            </div>
+                            <div class="file-actions">
+                                <button class="btn btn-sm btn-success" onclick="processFile('{{ file.name }}')" title="Process">
+                                    <i class="bi bi-play-fill"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteFile('{{ file.name }}', 'uploads')" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <i class="bi bi-inbox empty-icon"></i>
+                        <h5>কোন ফাইল নেই</h5>
+                        <p>ফাইল আপলোড করুন অথবা উপরের বক্সে ফাইল ড্রপ করুন</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PROCESSED TAB ===== -->
+<div id="tab-processed" class="file-tab-content d-none">
+    <div class="card">
+        <div class="card-header">
+            <h5><span class="badge bg-success me-2">{{ processed|length }}</span> প্রসেসড ফাইল</h5>
+            {% if processed %}
+            <button class="btn btn-sm btn-outline-danger" onclick="clearFolder('processed', () => location.reload())">
+                <i class="bi bi-trash me-1"></i> সব মুছুন
+            </button>
+            {% endif %}
+        </div>
+        <div class="card-body p-0">
+            {% if processed %}
+            <div class="file-list">
+                {% for file in processed %}
+                <div class="file-item">
+                    <div class="file-icon" style="background: rgba(17,153,142,0.1); color: #11998e;">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">{{ file.name }}</div>
+                        <div class="file-meta">
+                            <span>{{ file.size_hr }}</span>
+                            <span>&middot;</span>
+                            <span>{{ file.modified }}</span>
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn btn-sm btn-outline-warning" onclick="moveToUploads('{{ file.name }}', 'processed')" title="Reprocess">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteFile('{{ file.name }}', 'processed')" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="bi bi-check2-all empty-icon"></i>
+                <h5>কোন প্রসেসড ফাইল নেই</h5>
+                <p>ফাইল প্রসেস করার পর এখানে দেখাবে</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- ===== FAILED TAB ===== -->
+<div id="tab-failed" class="file-tab-content d-none">
+    <div class="card">
+        <div class="card-header">
+            <h5><span class="badge bg-danger me-2">{{ failed|length }}</span> ব্যর্থ ফাইল</h5>
+            {% if failed %}
+            <button class="btn btn-sm btn-outline-danger" onclick="clearFolder('failed', () => location.reload())">
+                <i class="bi bi-trash me-1"></i> সব মুছুন
+            </button>
+            {% endif %}
+        </div>
+        <div class="card-body p-0">
+            {% if failed %}
+            <div class="file-list">
+                {% for file in failed %}
+                <div class="file-item">
+                    <div class="file-icon" style="background: rgba(203,45,62,0.1); color: #cb2d3e;">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">{{ file.name }}</div>
+                        <div class="file-meta">
+                            <span>{{ file.size_hr }}</span>
+                            <span>&middot;</span>
+                            <span>{{ file.modified }}</span>
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn btn-sm btn-outline-warning" onclick="moveToUploads('{{ file.name }}', 'failed')" title="Retry">
+                            <i class="bi bi-arrow-counterclockwise"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteFile('{{ file.name }}', 'failed')" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="bi bi-emoji-smile empty-icon"></i>
+                <h5>কোন ব্যর্থ ফাইল নেই</h5>
+                <p>সবকিছু ঠিক আছে!</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- ===== DATABASE TAB ===== -->
+<div id="tab-database" class="file-tab-content d-none">
+    <div class="card">
+        <div class="card-header">
+            <h5><i class="bi bi-database"></i> ডাটাবেস রেকর্ড</h5>
+            <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-primary" onclick="loadDbRecords()">
+                    <i class="bi bi-arrow-clockwise"></i> রিফ্রেশ
+                </button>
+                <button class="btn btn-outline-danger" onclick="clearDatabase(() => loadDbRecords())">
+                    <i class="bi bi-trash"></i> মুছুন
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div id="dbRecordsContainer">
+                <div class="text-center py-4">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                    <small class="ms-2">লোড হচ্ছে...</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Multi-file upload zone
+    const zone = document.getElementById('fileUploadZone');
+    const multiInput = document.getElementById('multiFileInput');
+
+    if (zone && multiInput) {
+        zone.addEventListener('click', () => multiInput.click());
+
+        multiInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                uploadMultipleFiles(this.files);
+            }
+            this.value = '';
+        });
+
+        zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+        zone.addEventListener('dragleave', e => { e.preventDefault(); zone.classList.remove('drag-over'); });
+        zone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            if (e.dataTransfer.files.length > 0) {
+                uploadMultipleFiles(e.dataTransfer.files);
+            }
+        });
+    }
+
+    // Load DB records on database tab
+    loadDbRecords();
+});
+
+function switchFileTab(tabName, btn) {
+    // Update tabs
+    document.querySelectorAll('.page-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+
+    // Show content
+    document.querySelectorAll('.file-tab-content').forEach(el => el.classList.add('d-none'));
+    const target = document.getElementById('tab-' + tabName);
+    if (target) {
+        target.classList.remove('d-none');
+        if (tabName === 'database') {
+            loadDbRecords();
+        }
+    }
+}
+</script>
+{% endblock %}

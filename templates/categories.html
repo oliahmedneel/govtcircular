@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}Categories - JobSite{% endblock %}
+{% block page_icon %}bi-tags{% endblock %}
+{% block page_title %}ক্যাটাগরি ব্যবস্থাপনা{% endblock %}
+
+{% block content %}
+<!-- ===== CATEGORY CARDS ===== -->
+<div class="row g-3 mb-4">
+    {% set icons = {
+        'job_circular': 'bi-briefcase',
+        'tender_notice': 'bi-file-earmark-text',
+        'admission': 'bi-mortarboard',
+        'public_notice': 'bi-megaphone',
+        'unknown': 'bi-question-circle'
+    } %}
+    {% set bg_colors = {
+        'job_circular': {'gradient': 'linear-gradient(135deg, #667eea, #764ba2)', 'light': 'rgba(102,126,234,0.1)'},
+        'tender_notice': {'gradient': 'linear-gradient(135deg, #11998e, #38ef7d)', 'light': 'rgba(17,153,142,0.1)'},
+        'admission': {'gradient': 'linear-gradient(135deg, #4facfe, #00f2fe)', 'light': 'rgba(79,172,254,0.1)'},
+        'public_notice': {'gradient': 'linear-gradient(135deg, #f093fb, #f5576c)', 'light': 'rgba(245,87,108,0.1)'},
+        'unknown': {'gradient': 'linear-gradient(135deg, #6c757d, #adb5bd)', 'light': 'rgba(108,117,125,0.1)'}
+    } %}
+
+    {% for cat_key, cat_name in categories.items() %}
+    {% set count = stats.by_category.get(cat_key, 0) %}
+    {% set c = bg_colors.get(cat_key, bg_colors['unknown']) %}
+    <div class="col-md-4 col-lg-3 fade-in fade-in-delay-{{ loop.index }}">
+        <div class="card category-card text-center h-100">
+            <div class="card-body">
+                <div class="category-icon-wrapper" style="background: {{ c.light }}; color: {{ c.gradient.split(',')[0].split('(')[1] }};">
+                    <i class="{{ icons.get(cat_key, 'bi-folder') }}"></i>
+                </div>
+                <h5 class="card-title mt-2">{{ cat_name }}</h5>
+                <p class="display-5 fw-bold mb-1" style="background: {{ c.gradient }}; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">{{ count }}</p>
+                <small class="text-muted">টি পোস্ট</small>
+                <div class="mt-2">
+                    <span class="badge" style="background: {{ c.gradient }}; color: #fff;">{{ cat_key }}</span>
+                </div>
+            </div>
+            <div class="card-footer bg-white border-0 pb-3">
+                <a href="/posts" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye me-1"></i> পোস্ট দেখুন
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- ===== CHARTS & STATS ===== -->
+<div class="row g-4">
+    <!-- Pie Chart -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-pie-chart"></i> ক্যাটাগরি বন্টন (চার্ট)</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container" style="min-height: 300px;">
+                    <canvas id="categoryPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detailed Table -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="bi bi-table"></i> ক্যাটাগরি সারাংশ</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ক্যাটাগরি</th>
+                            <th>পোস্ট</th>
+                            <th>শতাংশ</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set total = stats.total_posts or 1 %}
+                        {% for cat_key, cat_name in categories.items() %}
+                        {% set count = stats.by_category.get(cat_key, 0) %}
+                        {% set percent = (count / total * 100)|round %}
+                        {% set colors = {
+                            'job_circular': {'bg': '#667eea'},
+                            'tender_notice': {'bg': '#11998e'},
+                            'admission': {'bg': '#4facfe'},
+                            'public_notice': {'bg': '#f5576c'},
+                            'unknown': {'bg': '#6c757d'}
+                        } %}
+                        <tr>
+                            <td>
+                                <span class="color-dot" style="background: {{ colors.get(cat_key, {'bg': '#667eea'}).bg }};"></span>
+                                {{ cat_name }}
+                            </td>
+                            <td><strong>{{ count }}</strong></td>
+                            <td><small class="text-muted">{{ percent }}%</small></td>
+                            <td style="width: 40%;">
+                                <div class="progress" style="height: 8px; background: rgba(0,0,0,0.05);">
+                                    <div class="progress-bar" role="progressbar" style="width: {{ percent }}%; background: {{ colors.get(cat_key, {'bg': '#667eea'}).bg }};"></div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-muted py-4">
+                                <i class="bi bi-bar-chart fs-2 d-block mb-2"></i>
+                                কোন ডাটা নেই
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <th>মোট</th>
+                            <th>{{ total }}</th>
+                            <th>100%</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Insights -->
+    <div class="col-12">
+        <div class="row g-3">
+            <div class="col-md-3 col-6">
+                <div class="card text-center p-3">
+                    <h4 class="mb-0 fw-bold text-primary">{{ stats.total_posts or 0 }}</h4>
+                    <small class="text-muted">মোট প্রসেসড</small>
+                </div>
+            </div>
+            {% for cat_key, cat_name in categories.items() %}
+            {% set count = stats.by_category.get(cat_key, 0) %}
+            {% if count > 0 %}
+            <div class="col-md-3 col-6">
+                <div class="card text-center p-3">
+                    <h4 class="mb-0 fw-bold">{{ count }}</h4>
+                    <small class="text-muted">{{ cat_name }}</small>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('categoryPieChart');
+    if (!ctx) return;
+
+    const labels = [
+        {% for cat_key, cat_name in categories.items() %}
+        '{{ cat_name }}',
+        {% endfor %}
+    ];
+    const data = [
+        {% for cat_key, cat_name in categories.items() %}
+        {{ stats.by_category.get(cat_key, 0) }},
+        {% endfor %}
+    ];
+    const colors = ['#667eea', '#11998e', '#4facfe', '#f5576c', '#6c757d'];
+
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors,
+                borderWidth: 3,
+                borderColor: '#fff',
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        font: { size: 12, weight: '500' },
+                        padding: 16,
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const pct = ((context.raw / total) * 100).toFixed(1);
+                            return context.label + ': ' + context.raw + ' (' + pct + '%)';
+                        }
+                    }
+                }
+            },
+            cutout: '60%'
+        }
+    });
+});
+</script>
+{% endblock %}

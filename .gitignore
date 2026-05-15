@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Hugo - build output
+/public/
+hugo-site/public/
+
+# Hugo generated
+/resources/_gen/
+/hugo_stats.json
+
+# Hugo nested git
+hugo-site/.git/
+hugo-site/.gitignore
+
+# Environment
+.env
+
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+logs/*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# Other
+failed/*.png
+thumbnails/*.jpg
+
+# Database files
+data/jobsite.db
+data/jobsite.db-shm
+data/jobsite.db-wal
