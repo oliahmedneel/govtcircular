@@ -2,13 +2,32 @@
 <h1 class="main-title">{{ .Site.Title }}</h1>
 <p class="main-subtitle">{{ .Site.Params.subtitle }}</p>
 
+<!-- CATEGORY QUICK LINKS ROW -->
+<div class="category-quick-links">
+    <a href="{{ "/categories/চাকরি/" | absURL }}">💼 চাকরির বিজ্ঞপ্তি</a> _ 
+    <a href="{{ "/categories/দরপত্র/" | absURL }}">📄 দরপত্র</a> 
+    <a href="{{ "/categories/ভর্তি/" | absURL }}">🎓 ভর্তি</a>
+</div>
+
 <!-- STATS SECTION -->
-<ul class="stats-list">
-    <li>{{ len (where .Site.RegularPages "Section" "posts") }} মোট পোস্ট</li>
-    <li>{{ len (where .Site.RegularPages "Params.categories" "intersect" (slice "চাকরি")) }} চাকরি</li>
-    <li>{{ len (where .Site.RegularPages "Params.categories" "intersect" (slice "দরপত্র")) }} দরপত্র</li>
-    <li>{{ len (where .Site.RegularPages "Params.categories" "intersect" (slice "ভর্তি")) }} ভর্তি</li>
-</ul>
+<div class="stats-vertical-list">
+    <div class="stat-group">
+        <div class="stat-num">{{ len (where .Site.RegularPages "Section" "posts") }}</div>
+        <div class="stat-label">মোট পোস্ট</div>
+    </div>
+    <div class="stat-group">
+        <div class="stat-num">{{ len (where .Site.RegularPages "Params.categories" "intersect" (slice "চাকরি")) }}</div>
+        <div class="stat-label">চাকরি</div>
+    </div>
+    <div class="stat-group">
+        <div class="stat-num">{{ len (where .Site.RegularPages "Params.categories" "intersect" (slice "দরপত্র")) }}</div>
+        <div class="stat-label">দরপত্র</div>
+    </div>
+    <div class="stat-group">
+        <div class="stat-num">{{ len (where .Site.RegularPages "Params.categories" "intersect" (slice "ভর্তি")) }}</div>
+        <div class="stat-label">ভর্তি</div>
+    </div>
+</div>
 
 <!-- CATEGORIES SECTION -->
 <div class="section-header">
@@ -17,7 +36,7 @@
 <div class="category-list">
     {{ range .Site.Taxonomies.categories.ByCount }}
     <a href="{{ .Page.Permalink }}" class="category-link">
-        📌 {{ .Page.Title }} ({{ .Count }} টি পোস্ট)
+        📌 {{ .Page.Title }}
     </a>
     {{ end }}
 </div>
@@ -26,16 +45,23 @@
 <div class="section-header">
     <span>🆕</span> সর্বশেষ পোস্ট
 </div>
+
+<div style="margin-bottom: 10px;">
+    <a href="{{ "/posts/" | absURL }}" style="font-weight: bold;">সব দেখুন →</a>
+</div>
+
 <div class="posts-list">
     {{ $latest := first 20 (where .Site.RegularPages "Section" "posts") }}
     {{ range $latest }}
     <div class="post-item">
-        <div class="post-title">
-            <span class="badge-new">NEW</span>
-            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        <div class="post-cat-above">
             {{ range .Params.categories }}
-            <span class="post-category-tag">— {{ . | humanize }}</span>
+            <a href="{{ printf "/categories/%s/" . | absURL }}">{{ . }}</a>
             {{ end }}
+        </div>
+        <div class="post-title">
+            <span class="badge-new-text">NEW</span>
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
         </div>
         <p class="post-snippet">{{ .Summary | plainify | truncate 120 }}</p>
         <div class="post-meta">
@@ -43,9 +69,5 @@
         </div>
     </div>
     {{ end }}
-</div>
-
-<div style="margin-top: 20px;">
-    <a href="{{ "/posts/" | absURL }}" style="font-weight: bold;">সব দেখুন →</a>
 </div>
 {{ end }}

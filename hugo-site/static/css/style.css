@@ -3,11 +3,11 @@
    ======================================== */
 
 :root {
-    --primary-blue: #0000ee;
+    --primary-blue: #000080; /* Darker blue for classic look */
     --text-dark: #000000;
-    --text-gray: #555555;
+    --text-gray: #333333;
     --bg-white: #ffffff;
-    --border-light: #eeeeee;
+    --border-light: #dddddd;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -16,12 +16,12 @@ body {
     font-family: 'Hind Siliguri', sans-serif;
     background-color: var(--bg-white);
     color: var(--text-dark);
-    line-height: 1.6;
-    padding: 10px;
+    line-height: 1.5;
+    padding: 20px;
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 900px;
     margin: 0 auto;
 }
 
@@ -36,18 +36,18 @@ a:hover {
 
 /* === HEADER & NAVIGATION === */
 .site-title-link {
-    font-weight: bold;
-    font-size: 1.2rem;
+    font-weight: normal;
+    font-size: 1rem;
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 2px;
 }
 
 .nav-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 5px;
-    font-size: 0.95rem;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
 }
 
 .nav-item {
@@ -56,54 +56,74 @@ a:hover {
     gap: 4px;
 }
 
-hr {
-    border: 0;
-    border-top: 1px solid var(--border-light);
-    margin: 10px 0;
-}
-
 /* === MAIN TITLES === */
 .main-title {
     font-size: 2.2rem;
     font-weight: bold;
-    margin: 15px 0 5px;
+    margin: 20px 0 10px;
 }
 
 .main-subtitle {
     font-size: 1.1rem;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
+    color: #444;
 }
 
-/* === STATS & CATEGORIES === */
+/* === CATEGORY QUICK LINKS === */
+.category-quick-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+/* === STATS SECTION === */
+.stats-vertical-list {
+    margin-bottom: 30px;
+}
+
+.stat-group {
+    margin-bottom: 10px;
+}
+
+.stat-num {
+    font-size: 1.2rem;
+    font-weight: normal;
+}
+
+.stat-label {
+    font-size: 1.1rem;
+    color: #000;
+}
+
+/* === SECTION HEADERS === */
 .section-header {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: bold;
-    margin: 20px 0 10px;
+    margin: 30px 0 15px;
 }
 
-.stats-list {
-    list-style: none;
-    margin-bottom: 20px;
-}
-
-.stats-list li {
-    font-size: 1rem;
-    margin-bottom: 2px;
-}
-
+/* === CATEGORIES === */
 .category-link {
     display: block;
     font-size: 1.1rem;
-    margin-bottom: 5px;
-    font-weight: 500;
+    margin-bottom: 8px;
+    font-weight: normal;
 }
 
 /* === POSTS === */
 .post-item {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+}
+
+.post-cat-above {
+    font-size: 1rem;
+    margin-bottom: 2px;
 }
 
 .post-title {
@@ -112,69 +132,34 @@ hr {
     margin-bottom: 5px;
 }
 
-.post-title a {
-    color: var(--primary-blue);
-}
-
-.post-category-tag {
-    color: var(--primary-blue);
+.badge-new-text {
+    font-size: 0.75rem;
     font-weight: bold;
+    margin-right: 5px;
 }
 
 .post-snippet {
-    font-size: 1rem;
-    margin-bottom: 5px;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
 }
 
 .post-meta {
-    font-size: 0.85rem;
-    color: var(--text-gray);
-}
-
-.badge-new {
-    background: #007bff;
-    color: white;
-    font-size: 0.65rem;
-    padding: 1px 4px;
-    border-radius: 3px;
-    font-weight: bold;
-    vertical-align: middle;
-    margin-right: 5px;
-    text-transform: uppercase;
+    font-size: 0.95rem;
+    color: #000;
 }
 
 /* === FOOTER === */
 .footer {
-    margin-top: 40px;
+    margin-top: 50px;
     padding-top: 20px;
-    border-top: 1px solid var(--border-light);
-    text-align: center;
-    font-size: 0.9rem;
-    color: var(--text-gray);
-}
-
-/* === BREADCRUMBS === */
-.breadcrumb {
-    font-size: 0.9rem;
-    margin-bottom: 15px;
-}
-
-/* === CONTENT PAGES === */
-.post-header h1 {
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-}
-
-.post-content {
     font-size: 1.1rem;
 }
 
-.post-content img {
-    max-width: 100%;
-    height: auto;
-    margin: 10px 0;
+.footer p {
+    margin-bottom: 10px;
 }
 
 @media (max-width: 600px) {
     .main-title { font-size: 1.8rem; }
 }
+
