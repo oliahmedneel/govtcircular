@@ -65,23 +65,23 @@ paginatePath = "page"
     weight = 1
   [[menu.main]]
     name = "💼 চাকরি"
-    url = "/categories/job-circular/"
+    url = "/categories/চাকরি/"
     weight = 2
   [[menu.main]]
     name = "📄 দরপত্র"
-    url = "/categories/tender-notice/"
+    url = "/categories/দরপত্র/"
     weight = 3
   [[menu.main]]
     name = "🎓 ভর্তি"
-    url = "/categories/admission/"
+    url = "/categories/ভর্তি/"
     weight = 4
   [[menu.main]]
     name = "📢 বিজ্ঞপ্তি"
-    url = "/categories/public-notice/"
+    url = "/categories/বিজ্ঞপ্তি/"
     weight = 5
   [[menu.main]]
     name = "ℹ️ অন্যান্য"
-    url = "/categories/unknown/"
+    url = "/categories/অন্যান্য/"
     weight = 6
 
 # Static files

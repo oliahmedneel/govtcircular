@@ -3,204 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    
-    <!-- SEO Meta -->
     <title>{{ if .Title }}{{ .Title }} | {{ end }}{{ .Site.Title }}</title>
     <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
-    <meta name="author" content="{{ .Site.Params.author }}">
-    <meta name="robots" content="index, follow">
-    <meta name="language" content="bn">
-    
-    <!-- Open Graph -->
-    <meta property="og:title" content="{{ .Title }}">
-    <meta property="og:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
-    <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
-    <meta property="og:url" content="{{ .Permalink }}">
-    <meta property="og:site_name" content="{{ .Site.Title }}">
-    <meta property="og:locale" content="bn_BD">
-    {{ with .Params.image }}<meta property="og:image" content="{{ . | absURL }}">{{ end }}
-    {{ if not .Params.image }}<meta property="og:image" content="{{ .Site.Params.og_image | absURL }}">{{ end }}
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ .Title }}">
-    <meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description }}{{ end }}">
-    {{ with .Params.image }}<meta name="twitter:image" content="{{ . | absURL }}">{{ end }}
-    
-    <!-- Article Meta -->
-    {{ if .IsPage }}
-    <meta property="article:published_time" content="{{ .PublishDate.Format "2006-01-02T15:04:05Z07:00" }}">
-    <meta property="article:modified_time" content="{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}">
-    {{ range .Params.categories }}<meta property="article:section" content="{{ . }}">{{ end }}
-    {{ range .Params.tags }}<meta property="article:tag" content="{{ . }}">{{ end }}
-    {{ end }}
-    
-    <!-- RSS -->
-    <link rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" href="{{ "/index.xml" | absURL }}">
-    
-    <!-- Canonical URL -->
-    <link rel="canonical" href="{{ .Permalink }}">
-    
-    <!-- Preload assets -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ "css/style.css" | relURL }}">
-    
-    <!-- Structured Data: Organization -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "{{ .Site.Title }}",
-        "url": "{{ .Site.BaseURL }}",
-        "description": "{{ .Site.Params.description }}",
-        "publisher": {
-            "@type": "Organization",
-            "name": "{{ .Site.Params.publisher }}"
-        }
-    }
-    </script>
-    
-    <!-- Structured Data: BreadcrumbList -->
-    {{ if not .IsHome }}
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        "itemListElement": [{
-            "@type": "ListItem",
-            "position": 1,
-            "name": "হোম",
-            "item": "{{ .Site.BaseURL }}"
-        },{{ if .IsPage }}
-        {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "{{ index .Params.categories 0 }}",
-            "item": "{{ "/categories/" | absURL }}{{ index .Params.categories 0 | urlize }}/"
-        },{{ end }}
-        {
-            "@type": "ListItem",
-            "position": {{ if .IsPage }}3{{ else }}2{{ end }},
-            "name": "{{ .Title }}",
-            "item": "{{ .Permalink }}"
-        }]
-    }
-    </script>
-    {{ end }}
-    
     {{ block "extra_head" . }}{{ end }}
 </head>
 <body>
+    <div class="container">
+        <!-- JS Logo / Title Link -->
+        <a href="{{ "/" | absURL }}" class="site-title-link">JS {{ .Site.Title }}</a>
 
-    <!-- ===== TOP BAR ===== -->
-    <div class="top-bar">
-        <div class="container">
-            <div class="top-bar-left">
-                <span>
-                    <svg class="date-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    {{ now.Format "Monday, 2 January 2006" }}
-                </span>
-                <span>বাংলাদেশ সরকারি চাকরি ও নিয়োগ বিজ্ঞপ্তি</span>
-            </div>
-            <div class="top-bar-right">
-                <a href="{{ "/index.xml" | absURL }}" target="_blank">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>
-                    RSS
-                </a>
-                <a href="{{ "/sitemap.xml" | absURL }}" target="_blank">সাইটম্যাপ</a>
-            </div>
-        </div>
+        <!-- First Navigation Row -->
+        <nav class="nav-row">
+            {{ range .Site.Menus.main }}
+            <a href="{{ .URL | absURL }}" class="nav-item">
+                {{ .Name }}
+            </a>
+            {{ end }}
+        </nav>
+
+        <!-- Repeated Navigation Row (as per screenshot) -->
+        <nav class="nav-row">
+            {{ range .Site.Menus.main }}
+            <a href="{{ .URL | absURL }}" class="nav-item">
+                {{ .Name }}
+            </a>
+            {{ end }}
+        </nav>
+
+        <main>
+            {{ block "main" . }}{{ end }}
+        </main>
+
+        <footer class="footer">
+            <p>{{ .Site.Params.copyright }}</p>
+            <p>পাওয়ার্ড বাই <a href="https://gohugo.io" target="_blank">Hugo</a></p>
+        </footer>
     </div>
 
-    <!-- ===== HEADER / NAVIGATION ===== -->
-    <header class="header">
-        <div class="container">
-            <div class="header-inner">
-                <a href="{{ "/" | relURL }}" class="logo">
-                    <span class="logo-icon">JS</span>
-                    <div>
-                        <span class="logo-text">{{ .Site.Title }}</span>
-                        <span class="logo-sub">সরকারি চাকরি ও নিয়োগ পোর্টাল</span>
-                    </div>
-                </a>
-                <nav class="nav-desktop">
-                    {{ range .Site.Menus.main }}
-                    <a href="{{ .URL | relURL }}" class="{{ if $.HasMenuCurrent "main" . }}active{{ end }}">
-                        {{ .Name }}
-                    </a>
-                    {{ end }}
-                </nav>
-                <button id="menuToggle" class="menu-toggle" aria-label="মেনু">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                </button>
-            </div>
-        </div>
-        <div id="mobileMenu" class="mobile-nav">
-            {{ range .Site.Menus.main }}
-            <a href="{{ .URL | relURL }}">{{ .Name }}</a>
-            {{ end }}
-        </div>
-    </header>
-
-    <main>
-        {{ block "main" . }}{{ end }}
-    </main>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <h3>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                        {{ .Site.Title }}
-                    </h3>
-                    <p>{{ .Site.Params.description }}</p>
-                </div>
-                <div class="footer-col">
-                    <h3>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                        দ্রুত লিংক
-                    </h3>
-                    <ul>
-                        <li><a href="{{ "/" | relURL }}">🏠 হোম</a></li>
-                        <li><a href="{{ "/categories/job-circular/" | relURL }}">💼 চাকরির বিজ্ঞপ্তি</a></li>
-                        <li><a href="{{ "/categories/tender-notice/" | relURL }}">📄 দরপত্র</a></li>
-                        <li><a href="{{ "/categories/admission/" | relURL }}">🎓 ভর্তি</a></li>
-                        <li><a href="{{ "/categories/public-notice/" | relURL }}">📢 সরকারি বিজ্ঞপ্তি</a></li>
-                        <li><a href="{{ "/categories/unknown/" | relURL }}">ℹ️ অন্যান্য</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h3>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                        তথ্য
-                    </h3>
-                    <ul>
-                        <li><a href="{{ "/sitemap.xml" | absURL }}" target="_blank">📍 সাইটম্যাপ</a></li>
-                        <li><a href="{{ "/index.xml" | absURL }}" target="_blank">📡 RSS ফিড</a></li>
-                        <li style="color: var(--gray-400); font-size: 0.85rem;">🔄 সর্বশেষ আপডেট: {{ now.Format "January 2, 2006" }}</li>
-                        <li style="color: var(--gray-400); font-size: 0.85rem;">📧 যোগাযোগ: info@jobs.bd</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>{{ .Site.Params.copyright }}</p>
-                <p>পাওয়ার্ড বাই <a href="https://gohugo.io" target="_blank">Hugo</a> & <a href="https://pages.github.com" target="_blank">GitHub Pages</a></p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="{{ "js/main.js" | relURL }}"></script>
-    <script>
-    document.getElementById('menuToggle')?.addEventListener('click', function() {
-        document.getElementById('mobileMenu').classList.toggle('open');
-    });
-    </script>
     {{ block "extra_scripts" . }}{{ end }}
 </body>
 </html>

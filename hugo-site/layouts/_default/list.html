@@ -1,70 +1,23 @@
 {{ define "main" }}
-<section class="list-page container">
-    <div class="breadcrumb">
-        <a href="{{ "/" | relURL }}">🏠 হোম</a>
-        <span class="sep">›</span>
-        <span>{{ .Title }}</span>
-    </div>
+<div class="breadcrumb">
+    <a href="{{ "/" | absURL }}">🏠 হোম</a> > {{ .Title }}
+</div>
 
-    <h1>{{ .Title }}</h1>
+<h1 class="main-title">{{ .Title }}</h1>
 
-    {{ if .Content }}
-    <div class="post-content" style="margin-bottom: 2rem;">
-        {{ .Content }}
-    </div>
-    {{ end }}
-
-    {{ if .RegularPages }}
-    <div class="posts-grid">
-        {{ range $index, $page := .RegularPages }}
-        <article class="post-card animate-in" style="animation-delay: {{ mul $index 0.05 }}s;">
-            <div class="post-card-top">
-                {{ range .Params.categories }}
-                <span class="post-badge 
-                    {{ if eq . "job-circular" }}badge-job{{ else if eq . "tender-notice" }}badge-tender{{ else if eq . "admission" }}badge-admission{{ else if eq . "public-notice" }}badge-notice{{ else }}badge-other{{ end }}">
-                    {{ if eq . "job-circular" }}💼{{ else if eq . "tender-notice" }}📄{{ else if eq . "admission" }}🎓{{ else if eq . "public-notice" }}📢{{ else }}📌{{ end }}
-                    {{ . | humanize }}
-                </span>
-                {{ end }}
-                <span class="post-date">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    {{ .PublishDate.Format "02 Jan 2006" }}
-                </span>
-            </div>
-            <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
-            <p class="post-excerpt">{{ .Summary | plainify | truncate 150 }}</p>
-            <div class="post-meta">
-                <span>
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    {{ .ReadingTime }} মিনিট পড়া
-                </span>
-            </div>
-        </article>
-        {{ end }}
-    </div>
-
-    {{ partial "pagination.html" . }}
-    {{ else }}
-    <div class="empty-state">
-        <div class="empty-icon">📭</div>
-        <h3>কোনো পোস্ট পাওয়া যায়নি</h3>
-        <p>এই ক্যাটাগরিতে এখনো কোনো পোস্ট নেই</p>
+<div class="posts-list">
+    {{ range .RegularPages }}
+    <div class="post-item">
+        <div class="post-title">
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </div>
+        <p class="post-snippet">{{ .Summary | plainify | truncate 150 }}</p>
+        <div class="post-meta">
+            {{ .PublishDate.Format "02 Jan 2006" }} | {{ .ReadingTime }} মিনিট পড়া
+        </div>
     </div>
     {{ end }}
-</section>
-{{ end }}
+</div>
 
-{{ define "extra_head" }}
-<style>
-    .list-page h1::before {
-        content: '';
-        display: inline-block;
-        width: 3px;
-        height: 1.4em;
-        background: var(--primary);
-        border-radius: 2px;
-        margin-left: 0.5rem;
-        vertical-align: middle;
-    }
-</style>
+{{ partial "pagination.html" . }}
 {{ end }}
