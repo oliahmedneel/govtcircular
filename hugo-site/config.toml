@@ -6,7 +6,7 @@ baseURL = "https://oliahmedneel.github.io/govtcircular/"
 title = "বাংলাদেশ চাকরি ও বিজ্ঞপ্তি"
 languageCode = "bn-BD"
 defaultContentLanguage = "bn"
-theme = ""
+# theme = ""  # No theme needed; layouts are in the site directory
 enableRobotsTXT = true
 enableGitInfo = false
 
